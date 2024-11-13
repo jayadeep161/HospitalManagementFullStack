@@ -4,6 +4,7 @@ import com.project.HospitalManagementSystem.Dto.AppointmentDto;
 import com.project.HospitalManagementSystem.Dto.ResponseDto;
 import com.project.HospitalManagementSystem.Entity.Appointment;
 import com.project.HospitalManagementSystem.Repository.AppointmentRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,10 @@ public class AppointmentService {
             AppointmentStratergy=stratergy.stream()
                     .collect(Collectors.toMap(strat->strat.getClass().getSimpleName().replace("Service",""),strat->strat));
 
+            System.out.println(stratergy);
 
     }
+
 
     public ResponseEntity<ResponseDto> RegisterAppointment(AppointmentDto appointmentDto){
 
@@ -67,7 +70,7 @@ public class AppointmentService {
                     .getAuthorities()
                     .stream()
                     .map(role->AppointmentStratergy.get(role.toString().replace("ROLE_","")))
-                    .peek(System.out::println)
+                   .peek(System.out::println)
                     .findFirst()
                     .orElseThrow(()-> new RuntimeException("no statergy found"));
 

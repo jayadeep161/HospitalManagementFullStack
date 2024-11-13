@@ -1,5 +1,7 @@
 package com.project.HospitalManagementSystem;
 
+import org.modelmapper.Condition;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +18,7 @@ public class HospitalManagementSystemApplication {
 	@Bean
 	public ModelMapper modelMapper() {
 		ModelMapper modelMapper = new ModelMapper();
+
 		modelMapper.getConfiguration()
 				.setPropertyCondition(ctx-> {return ctx.getDestination()==null;})
 				.setMatchingStrategy(MatchingStrategies.STRICT);

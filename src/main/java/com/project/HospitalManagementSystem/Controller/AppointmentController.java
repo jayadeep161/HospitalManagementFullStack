@@ -22,4 +22,6 @@ public class AppointmentController {
     public ResponseEntity<ResponseDto> updateAppointment(@RequestBody AppointmentDto appointmentDto,@PathVariable  long id){
         return appointmentService.updateAppointment(id,appointmentDto);
     }
+
 }
+
