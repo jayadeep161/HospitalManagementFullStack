@@ -17,11 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
-
-import static com.project.HospitalManagementSystem.HospitalConstants.TREATMENT_PENDING;
 
 @Service
 public class DoctorService implements AppointmentManagement{
@@ -61,15 +59,25 @@ public class DoctorService implements AppointmentManagement{
        }
     }
 
-    public ResponseEntity<ResponseDto> RegisterDoctor(UserRegDto userRegDto){
+    public ResponseEntity<ResponseDto> RegisterDoctor(MultipartFile file, UserRegDto userRegDto){
+
+        System.out.println("name of the file "+file.getOriginalFilename());
+
         try{
             Users user=new Users();
-
-            modelMapper.map(userRegDto,user);
-
+            System.out.println(userRegDto.getEmailId());
+            user.setFirstname(userRegDto.getFirstname());
+            user.setLastname(userRegDto.getLastname());
+            user.setEmailId(userRegDto.getEmailId());
+            user.setPassword(userRegDto.getPassword());
+            user.setAddress(userRegDto.getAddress());
+            user.setContactNo(userRegDto.getContactNo());
+            user.setAge(userRegDto.getAge());
+            user.setExperience(userRegDto.getExperience());
+            user.setSpecialist(userRegDto.getSpecialist());
             user.setRole(Role.valueOf("ROLE_Doctor"));
-
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setUrl(file.getOriginalFilename());
+            user.setPassword(passwordEncoder.encode(userRegDto.getPassword()));
 
             usersRepo.save(user);
 

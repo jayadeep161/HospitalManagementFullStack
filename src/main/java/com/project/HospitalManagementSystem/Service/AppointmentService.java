@@ -2,14 +2,11 @@ package com.project.HospitalManagementSystem.Service;
 
 import com.project.HospitalManagementSystem.Dto.AppointmentDto;
 import com.project.HospitalManagementSystem.Dto.ResponseDto;
-import com.project.HospitalManagementSystem.Entity.Appointment;
 import com.project.HospitalManagementSystem.Repository.AppointmentRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +46,7 @@ public class AppointmentService {
                     .map(role->AppointmentStratergy.get("Patient"))
                     .findFirst().orElseThrow(()-> new RuntimeException("you are not authorised"));
             return  appointmentManagement.
-                    registerAppointment(appointmentDto);
+                    registerAppointment(appointmentDto,authentication);
         }
         catch (Exception e){
             return new ResponseEntity<>(new ResponseDto("403",e.getMessage()), HttpStatus.FORBIDDEN);

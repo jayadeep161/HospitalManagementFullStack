@@ -7,6 +7,7 @@ import com.project.HospitalManagementSystem.Entity.Appointment;
 import com.project.HospitalManagementSystem.Entity.Patient;
 import com.project.HospitalManagementSystem.Entity.Role;
 import com.project.HospitalManagementSystem.Entity.Users;
+import com.project.HospitalManagementSystem.Exception.ResourceNotFound;
 import com.project.HospitalManagementSystem.Repository.AppointmentRepository;
 import com.project.HospitalManagementSystem.Repository.PatientRepository;
 import com.project.HospitalManagementSystem.Repository.UsersRepository;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,17 +63,25 @@ public class PatientService implements AppointmentManagement{
         }
     }
 
-    public ResponseEntity<ResponseDto> registerAppointment(AppointmentDto appointmentDto){
-
+    public ResponseEntity<ResponseDto> registerAppointment(AppointmentDto appointmentDto, Authentication authentication){
+        Users appointment_initiated_patient=null;
         try{
+
+            appointment_initiated_patient=usersRepo.findByEmailId(authentication.getName()).orElseThrow(()->new ResourceNotFound("patient doesnt exist"));
+
                 Appointment appointment=new Appointment();
                 modelMapper.map(appointmentDto,appointment);
+                appointment.setPatientName(appointment_initiated_patient.getFirstname() +" "+appointment_initiated_patient.getLastname());
+                appointment.setPatientContact(appointment_initiated_patient.getContactNo());
                 appointment.setDoctorName(NOT_ASSIGNED_TO_DOCTOR);
                 appointment.setPrescription(NOT_ASSIGNED_TO_DOCTOR);
                 appointment.setAppointmentStatus(NOT_ASSIGNED_TO_DOCTOR);
                 appointment.setAppointmentPrice(NOT_ASSIGNED_TO_DOCTOR);
                 appointmentRepository.save(appointment);
             return new ResponseEntity<>(new ResponseDto("201","appointment created"),HttpStatus.CREATED);
+        }
+        catch (ResourceNotFound e){
+            return new ResponseEntity<>(new ResponseDto("404",e.getMessage()),HttpStatus.NOT_FOUND);
         }
         catch (Exception e){
             return  new ResponseEntity<>(new ResponseDto("406",e.getMessage()),HttpStatus.NOT_ACCEPTABLE);
@@ -84,7 +94,7 @@ public class PatientService implements AppointmentManagement{
             Users user=new Users();
             modelMapper.map(userRegDto,user);
             user.setPassword(passwordEncoder.encode(userRegDto.getPassword()));
-            user.setRole(Role.valueOf("ROLE_Patient"));
+            user.setRole(Role.valueOf("ROLE_Patient")); // string -> role conversion //enum.valueOf()
             usersRepo.save(user);
             return new ResponseEntity<>(new ResponseDto("Patient Registered","201"), HttpStatus.CREATED);
         }

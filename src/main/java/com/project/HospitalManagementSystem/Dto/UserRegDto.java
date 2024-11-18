@@ -1,10 +1,7 @@
 package com.project.HospitalManagementSystem.Dto;
 
-import com.project.HospitalManagementSystem.Entity.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class UserRegDto {
@@ -21,4 +18,5 @@ public class UserRegDto {
     private String bloodGroup;
     private String url;
     private String gender;
+    private MultipartFile image;
 }
