@@ -28,6 +28,8 @@ public class AdminService implements AppointmentManagement{
         try{
             Appointment pendingpatientappointment=appointmentRepository.findById(id).orElseThrow(()->new RuntimeException("not found patient record"));
 
+            System.out.println(pendingpatientappointment.getPatientName());
+
             pendingpatientappointment.setDoctorName(appointmentDto.getDoctorName());
             pendingpatientappointment.setAppointment(appointmentDto.getAppointment());
 

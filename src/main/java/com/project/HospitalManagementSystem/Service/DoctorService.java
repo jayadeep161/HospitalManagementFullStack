@@ -12,6 +12,7 @@ import com.project.HospitalManagementSystem.Repository.DoctorRepository;
 import com.project.HospitalManagementSystem.Repository.UsersRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Service
@@ -39,6 +45,10 @@ public class DoctorService implements AppointmentManagement{
 
     @Autowired
     private DoctorRepository doctorRepo;
+
+    @Value("${upload.dir}")
+    private String uploadDir;
+
 
     @Override
     public ResponseEntity<ResponseDto> updateAppointment(long id, AppointmentDto appointmentDto) {
@@ -61,11 +71,9 @@ public class DoctorService implements AppointmentManagement{
 
     public ResponseEntity<ResponseDto> RegisterDoctor(MultipartFile file, UserRegDto userRegDto){
 
-        System.out.println("name of the file "+file.getOriginalFilename());
 
         try{
             Users user=new Users();
-            System.out.println(userRegDto.getEmailId());
             user.setFirstname(userRegDto.getFirstname());
             user.setLastname(userRegDto.getLastname());
             user.setEmailId(userRegDto.getEmailId());
@@ -76,8 +84,14 @@ public class DoctorService implements AppointmentManagement{
             user.setExperience(userRegDto.getExperience());
             user.setSpecialist(userRegDto.getSpecialist());
             user.setRole(Role.valueOf("ROLE_Doctor"));
-            user.setUrl(file.getOriginalFilename());
             user.setPassword(passwordEncoder.encode(userRegDto.getPassword()));
+
+
+            Path fileNamePath = Paths.get(uploadDir,file.getOriginalFilename());
+
+            file.transferTo(fileNamePath);
+
+            user.setUrl(fileNamePath.toString());
 
             usersRepo.save(user);
 
@@ -117,6 +131,13 @@ public class DoctorService implements AppointmentManagement{
 
         List<Doctor> doctors=doctorRepo.findAll();
         return ResponseEntity.ok(doctors);
+    }
+
+    private void makeDirectoryIfNotExist(String imageDirectory) {
+        File directory = new File(imageDirectory);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
     }
 
 }

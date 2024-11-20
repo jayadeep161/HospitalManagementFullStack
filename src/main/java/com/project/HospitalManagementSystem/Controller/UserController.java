@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 public class UserController {
 
-
     @Autowired
     private UserService userservice;
 
@@ -32,6 +31,9 @@ public class UserController {
 
     @Autowired
     private DoctorService doctorService;
+
+
+    private String uploaddir;
 
     @PostMapping(value = "/api/v1/Doctor/doctorReg" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> RegisterDoctor(@RequestParam("image") MultipartFile image, @RequestParam("data") String data) throws JsonProcessingException {
